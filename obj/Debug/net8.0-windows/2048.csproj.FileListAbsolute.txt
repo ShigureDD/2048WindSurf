@@ -1,0 +1,14 @@
+C:\Users\TomLam(Artmax)\CascadeProjects\2048\obj\Debug\net8.0-windows\2048.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\TomLam(Artmax)\CascadeProjects\2048\obj\Debug\net8.0-windows\2048.AssemblyInfoInputs.cache
+C:\Users\TomLam(Artmax)\CascadeProjects\2048\obj\Debug\net8.0-windows\2048.AssemblyInfo.cs
+C:\Users\TomLam(Artmax)\CascadeProjects\2048\obj\Debug\net8.0-windows\2048.csproj.CoreCompileInputs.cache
+C:\Users\TomLam(Artmax)\CascadeProjects\2048\bin\Debug\net8.0-windows\2048.exe
+C:\Users\TomLam(Artmax)\CascadeProjects\2048\bin\Debug\net8.0-windows\2048.deps.json
+C:\Users\TomLam(Artmax)\CascadeProjects\2048\bin\Debug\net8.0-windows\2048.runtimeconfig.json
+C:\Users\TomLam(Artmax)\CascadeProjects\2048\bin\Debug\net8.0-windows\2048.dll
+C:\Users\TomLam(Artmax)\CascadeProjects\2048\bin\Debug\net8.0-windows\2048.pdb
+C:\Users\TomLam(Artmax)\CascadeProjects\2048\obj\Debug\net8.0-windows\2048.dll
+C:\Users\TomLam(Artmax)\CascadeProjects\2048\obj\Debug\net8.0-windows\refint\2048.dll
+C:\Users\TomLam(Artmax)\CascadeProjects\2048\obj\Debug\net8.0-windows\2048.pdb
+C:\Users\TomLam(Artmax)\CascadeProjects\2048\obj\Debug\net8.0-windows\2048.genruntimeconfig.cache
+C:\Users\TomLam(Artmax)\CascadeProjects\2048\obj\Debug\net8.0-windows\ref\2048.dll
