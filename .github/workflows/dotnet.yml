@@ -1,10 +1,16 @@
-name: .NET
+name: .NET CI/CD
 
 on:
   push:
     branches: [ "main" ]
+    tags: [ "v*" ]
   pull_request:
     branches: [ "main" ]
+    
+# Environment variables
+env:
+  NUGET_AUTH_TOKEN: ${{ secrets.NUGET_AUTH_TOKEN }}  # Set this in your repo secrets
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   build:
@@ -29,3 +35,27 @@ jobs:
       
     - name: Test
       run: dotnet test --no-build --verbosity normal --configuration Release
+      
+    - name: Pack
+      if: startsWith(github.ref, 'refs/tags/v')
+      run: |
+        $version = ${{ github.ref_name }}.Substring(1)  # Remove 'v' prefix
+        dotnet pack --configuration Release -p:PackageVersion=$version -p:Version=$version --output nupkgs
+        
+    - name: Push to GitHub Packages
+      if: startsWith(github.ref, 'refs/tags/v')
+      run: |
+        dotnet nuget push "**/*.nupkg" --skip-duplicate --api-key ${{ github.token }} --source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
+        
+    - name: Create Release
+      if: startsWith(github.ref, 'refs/tags/v')
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          **/bin/Release/**/*.dll
+          **/bin/Release/**/*.exe
+          **/bin/Release/**/*.pdb
+          **/bin/Release/**/*.config
+        draft: false
+        prerelease: false
+        generate_release_notes: true
