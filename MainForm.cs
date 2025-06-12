@@ -40,7 +40,7 @@ namespace _2048
         private const int MinTileSize = 80; // Minimum size for each tile
 
         // Animation state
-        private List<Game2048.TileMove> animMoves = null;
+        private List<Game2048.TileMove>? animMoves = null;
         private float animProgress = 1f; // 1 = no animation, 0 = start
         private System.Windows.Forms.Timer animTimer;
         private const int AnimationDuration = 100; // ms - matching CSS transition-duration
@@ -59,7 +59,7 @@ namespace _2048
         private float[,] slideOffsets; // For tracking individual tile slide positions
         private DateTime animStartTime;
         private Game2048.Direction? animDirection = null;
-        private int[,] animBoardBefore = null;
+        private int[,]? animBoardBefore = null;
 
         public MainForm()
         {
