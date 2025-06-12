@@ -6,11 +6,11 @@ on:
     tags: [ "v*" ]
   pull_request:
     branches: [ "main" ]
-    
-# Environment variables
+
 env:
-  NUGET_AUTH_TOKEN: ${{ secrets.NUGET_AUTH_TOKEN }}  # Set this in your repo secrets
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  BUILD_CONFIGURATION: Release
+  DOTNET_VERSION: '8.0.x'
+  RUNTIME_ID: 'win-x64'
 
 jobs:
   build:
@@ -36,26 +36,86 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal --configuration Release
       
-    - name: Pack
+    - name: Setup .NET
       if: startsWith(github.ref, 'refs/tags/v')
-      run: |
-        $version = ${{ github.ref_name }}.Substring(1)  # Remove 'v' prefix
-        dotnet pack --configuration Release -p:PackageVersion=$version -p:Version=$version --output nupkgs
-        
-    - name: Push to GitHub Packages
-      if: startsWith(github.ref, 'refs/tags/v')
-      run: |
-        dotnet nuget push "**/*.nupkg" --skip-duplicate --api-key ${{ github.token }} --source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
-        
-    - name: Create Release
-      if: startsWith(github.ref, 'refs/tags/v')
-      uses: softprops/action-gh-release@v1
+      uses: actions/setup-dotnet@v3
       with:
-        files: |
-          **/bin/Release/**/*.dll
-          **/bin/Release/**/*.exe
-          **/bin/Release/**/*.pdb
-          **/bin/Release/**/*.config
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Publish Self-Contained Application
+      if: startsWith(github.ref, 'refs/tags/v')
+      run: |
+        $version = ${{ github.ref_name }}.Substring(1)
+        $outputDir = "publish/${{ env.RUNTIME_ID }}"
+        
+        # Clean previous publish
+        if (Test-Path $outputDir) {
+          Remove-Item -Recurse -Force $outputDir
+        }
+        
+        # Publish as self-contained single file
+        dotnet publish "2048.csproj" `
+          -c ${{ env.BUILD_CONFIGURATION }} `
+          -r ${{ env.RUNTIME_ID }} `
+          --self-contained true `
+          -p:PublishSingleFile=true `
+          -p:IncludeNativeLibrariesForSelfExtract=true `
+          -p:EnableCompressionInSingleFile=true `
+          -p:PublishTrimmed=true `
+          -p:DebugType=None `
+          -p:DebugSymbols=false `
+          -p:Version=$version `
+          -o $outputDir `
+          -p:GenerateRuntimeConfigurationFiles=true
+        
+        # Create a zip archive of the published files
+        $zipName = "2048-Windows-x64-v$version.zip"
+        Compress-Archive -Path "$outputDir/*" -DestinationPath $zipName -Force
+        
+        # Set output for the next step
+        echo "RELEASE_ASSET=$zipName" >> $env:GITHUB_ENV
+
+    - name: Create GitHub Release
+      if: startsWith(github.ref, 'refs/tags/v')
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref_name }}
+        release_name: "2048 Game ${{ github.ref_name }}"
         draft: false
         prerelease: false
-        generate_release_notes: true
+        body: |
+          # 2048 Game
+          
+          ## What's New
+          - Version: ${{ github.ref_name }}
+          - Built as self-contained Windows x64 executable
+          - Single file deployment
+          
+          ## How to Use
+          1. Download the zip file below
+          2. Extract the contents
+          3. Run `2048.exe`
+          
+          ## System Requirements
+          - Windows 10/11 64-bit
+          - .NET 8.0 Runtime (included)
+          
+          ## Assets
+          - `${{ env.RELEASE_ASSET }}`: Self-contained Windows x64 executable
+          
+          ---
+          
+          *Automatically generated release*
+
+    - name: Upload Release Asset
+      if: startsWith(github.ref, 'refs/tags/v')
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: ${{ env.RELEASE_ASSET }}
+        asset_name: ${{ env.RELEASE_ASSET }}
+        asset_content_type: application/zip
