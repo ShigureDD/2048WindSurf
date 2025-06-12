@@ -2,8 +2,6 @@
 
 A Windows desktop implementation of the popular 2048 puzzle game, built with .NET 8.0 and Windows Forms.
 
-![Game Screenshot](https://via.placeholder.com/400x500.png?text=2048+Game+Screenshot)
-
 ## Features
 
 - Classic 2048 gameplay
@@ -22,8 +20,8 @@ A Windows desktop implementation of the popular 2048 puzzle game, built with .NE
 
 ### Option 1: Download Pre-built Release
 
-1. Go to the [Releases](https://github.com/yourusername/2048/releases) page
-2. Download the latest `2048-Windows-x64-vX.X.X.zip` file
+1. Go to the [Releases](https://github.com/ShigureDD/2048WindSurf/releases) page
+2. Download the latest `2048.7z` file
 3. Extract the ZIP file to a folder of your choice
 4. Run `2048.exe`
 
@@ -85,9 +83,6 @@ The output will be in `bin\Release\net8.0-windows\win-x64\publish\`.
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgements
 
